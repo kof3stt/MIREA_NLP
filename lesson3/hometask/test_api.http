@@ -1,0 +1,259 @@
+# Примеры HTTP запросов для тестирования OpenAI API
+# Используйте с REST Client расширением для VS Code
+
+### ========================================
+### Эндпоинт 1: GET /v1/models
+### ========================================
+
+### Получить список моделей
+GET http://127.0.0.1:8000/v1/models
+Accept: application/json
+
+
+### ========================================
+### Эндпоинт 2: POST /v1/chat/completions
+### ========================================
+
+### Простой чат запрос
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Hello! How are you?"
+    }
+  ]
+}
+
+### Чат с несколькими сообщениями
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a Python programming expert."
+    },
+    {
+      "role": "user",
+      "content": "What is FastAPI?"
+    },
+    {
+      "role": "assistant",
+      "content": "FastAPI is a modern web framework for building APIs."
+    },
+    {
+      "role": "user",
+      "content": "Can you give me an example?"
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 150
+}
+
+### Чат с низкой температурой (более детерминированный)
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explain machine learning in one sentence."
+    }
+  ],
+  "temperature": 0.1,
+  "max_tokens": 50
+}
+
+### Тест: Несуществующая модель (должна вернуть 404)
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-5",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello"
+    }
+  ]
+}
+
+### Тест: Пустой список сообщений (должна вернуть 400 или 422)
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": []
+}
+
+### Тест: Неверная роль (должна вернуть 422)
+POST http://127.0.0.1:8000/v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "invalid_role",
+      "content": "Hello"
+    }
+  ]
+}
+
+
+### ========================================
+### Эндпоинт 3: POST /v1/completions
+### ========================================
+
+### Простое завершение текста
+POST http://127.0.0.1:8000/v1/completions
+Content-Type: application/json
+
+{
+  "model": "text-davinci-003",
+  "prompt": "Once upon a time in a land far away",
+  "max_tokens": 50,
+  "temperature": 0.7
+}
+
+### Завершение с несколькими вариантами
+POST http://127.0.0.1:8000/v1/completions
+Content-Type: application/json
+
+{
+  "model": "text-davinci-003",
+  "prompt": "The best programming language is",
+  "max_tokens": 30,
+  "temperature": 0.9,
+  "n": 3
+}
+
+### Завершение с списком промптов
+POST http://127.0.0.1:8000/v1/completions
+Content-Type: application/json
+
+{
+  "model": "text-davinci-003",
+  "prompt": [
+    "Python is",
+    "JavaScript is",
+    "FastAPI is"
+  ],
+  "max_tokens": 20,
+  "temperature": 0.5
+}
+
+### Тест: Слишком много токенов (должна вернуть 422)
+POST http://127.0.0.1:8000/v1/completions
+Content-Type: application/json
+
+{
+  "model": "text-davinci-003",
+  "prompt": "Hello",
+  "max_tokens": 10000
+}
+
+
+### ========================================
+### Эндпоинт 4: POST /v1/embeddings
+### ========================================
+
+### Простой эмбеддинг
+POST http://127.0.0.1:8000/v1/embeddings
+Content-Type: application/json
+
+{
+  "model": "text-embedding-ada-002",
+  "input": "The food was delicious and the waiter was friendly."
+}
+
+### Эмбеддинги для нескольких текстов
+POST http://127.0.0.1:8000/v1/embeddings
+Content-Type: application/json
+
+{
+  "model": "text-embedding-ada-002",
+  "input": [
+    "Python is a programming language",
+    "FastAPI is a web framework",
+    "Machine learning is fascinating"
+  ]
+}
+
+### Эмбеддинг с указанием формата
+POST http://127.0.0.1:8000/v1/embeddings
+Content-Type: application/json
+
+{
+  "model": "text-embedding-ada-002",
+  "input": "Hello, world!",
+  "encoding_format": "float"
+}
+
+### Тест: Неверный формат (должна вернуть 422)
+POST http://127.0.0.1:8000/v1/embeddings
+Content-Type: application/json
+
+{
+  "model": "text-embedding-ada-002",
+  "input": "Test",
+  "encoding_format": "invalid"
+}
+
+
+### ========================================
+### Дополнительные тесты
+### ========================================
+
+### Корневой эндпоинт
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+### OpenAPI схема
+GET http://127.0.0.1:8000/openapi.json
+Accept: application/json
+
+### ========================================
+### CURL примеры (для терминала)
+### ========================================
+
+# Получить модели:
+curl http://127.0.0.1:8000/v1/models
+
+# Chat completion:
+curl -X POST http://127.0.0.1:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+
+# Text completion:
+curl -X POST http://127.0.0.1:8000/v1/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "text-davinci-003",
+    "prompt": "Once upon a time",
+    "max_tokens": 50
+  }'
+
+# Embeddings:
+curl -X POST http://127.0.0.1:8000/v1/embeddings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "text-embedding-ada-002",
+    "input": "Hello, world!"
+  }'

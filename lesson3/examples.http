@@ -1,0 +1,191 @@
+# Примеры HTTP запросов для тестирования API
+# Используйте с REST Client расширением для VS Code
+# или скопируйте в любой HTTP клиент
+
+### 1. Hello World
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+### 2. Приветствие с именем
+GET http://127.0.0.1:8000/hello/Иван
+Accept: application/json
+
+### 3. Информация о приложении
+GET http://127.0.0.1:8000/info
+Accept: application/json
+
+### ========================================
+### Path Parameters
+### ========================================
+
+### Получить пользователя по ID
+GET http://127.0.0.1:8000/users/42
+Accept: application/json
+
+### Получить товар по названию
+GET http://127.0.0.1:8000/items/laptop
+Accept: application/json
+
+### Получить пост пользователя
+GET http://127.0.0.1:8000/users/1/posts/5
+Accept: application/json
+
+### Получить товар с валидацией
+GET http://127.0.0.1:8000/products/100
+Accept: application/json
+
+### Категория (Enum)
+GET http://127.0.0.1:8000/categories/electronics
+Accept: application/json
+
+### ========================================
+### Query Parameters
+### ========================================
+
+### Пагинация
+GET http://127.0.0.1:8000/items/?skip=10&limit=5
+Accept: application/json
+
+### Поиск
+GET http://127.0.0.1:8000/search/?q=laptop&category=electronics
+Accept: application/json
+
+### Фильтр товаров
+GET http://127.0.0.1:8000/products/?name=laptop&price_min=500&price_max=2000
+Accept: application/json
+
+### Фильтр пользователей
+GET http://127.0.0.1:8000/users/?active=true&verified=false
+Accept: application/json
+
+### Фильтр по тегам
+GET http://127.0.0.1:8000/filter/?tags=new&tags=sale&tags=featured
+Accept: application/json
+
+### ========================================
+### Request Body
+### ========================================
+
+### Создать пользователя
+POST http://127.0.0.1:8000/users/
+Content-Type: application/json
+
+{
+  "name": "Иван Иванов",
+  "email": "ivan@example.com",
+  "age": 25
+}
+
+### Создать товар
+POST http://127.0.0.1:8000/products/
+Content-Type: application/json
+
+{
+  "name": "Игровой ноутбук",
+  "description": "Мощный ноутбук для игр",
+  "price": 75000.0,
+  "tax": 20.0,
+  "in_stock": true
+}
+
+### Создать клиента с адресом
+POST http://127.0.0.1:8000/customers/
+Content-Type: application/json
+
+{
+  "name": "Петр Петров",
+  "email": "petr@example.com",
+  "phone": "+7 999 123-45-67",
+  "address": {
+    "street": "ул. Ленина, 10",
+    "city": "Москва",
+    "country": "Россия",
+    "postal_code": "123456"
+  }
+}
+
+### Создать заказ
+POST http://127.0.0.1:8000/orders/
+Content-Type: application/json
+
+{
+  "customer_id": 1,
+  "items": [
+    {
+      "product_id": 1,
+      "quantity": 2,
+      "price": 100.0
+    },
+    {
+      "product_id": 2,
+      "quantity": 1,
+      "price": 250.0
+    }
+  ],
+  "status": "pending",
+  "notes": "Доставка до двери"
+}
+
+### Создать отзыв
+POST http://127.0.0.1:8000/products/1/reviews
+Content-Type: application/json
+
+{
+  "review": {
+    "rating": 5,
+    "comment": "Отличный товар, всем рекомендую!",
+    "recommend": true
+  },
+  "user_id": 123
+}
+
+### Регистрация пользователя
+POST http://127.0.0.1:8000/register/
+Content-Type: application/json
+
+{
+  "username": "ivan123",
+  "password": "SecurePass123",
+  "password_confirm": "SecurePass123",
+  "email": "ivan@example.com",
+  "age": 25
+}
+
+### ========================================
+### Тесты на ошибки валидации
+### ========================================
+
+### Неверный тип данных (ожидается int)
+GET http://127.0.0.1:8000/users/abc
+Accept: application/json
+
+### Значение вне диапазона
+GET http://127.0.0.1:8000/products/9999
+Accept: application/json
+
+### Неверный Enum
+GET http://127.0.0.1:8000/categories/invalid_category
+Accept: application/json
+
+### Отсутствующее обязательное поле
+POST http://127.0.0.1:8000/users/
+Content-Type: application/json
+
+{
+  "name": "Иван"
+}
+
+### Неверный формат email (требует pydantic[email])
+POST http://127.0.0.1:8000/customers/
+Content-Type: application/json
+
+{
+  "name": "Иван",
+  "email": "invalid-email",
+  "address": {
+    "street": "ул. Ленина",
+    "city": "Москва",
+    "country": "Россия",
+    "postal_code": "123456"
+  }
+}
